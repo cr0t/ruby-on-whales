@@ -8,12 +8,12 @@ x-app: &app
       RUBY_VERSION: '2.6.5'
       PG_MAJOR: '12'
       NODE_MAJOR: '13'
-      YARN_VERSION: '1.19.2'
-      BUNDLER_VERSION: '2.0.2'
+      YARN_VERSION: '1.21.1'
+      BUNDLER_VERSION: '2.1.4'
   environment: &env
     NODE_ENV: development
     RAILS_ENV: ${RAILS_ENV:-development}
-  image: example-dev:1.0.0
+  image: ruby-on-whales:1.0.0
   tmpfs:
     - /tmp
 
@@ -24,7 +24,7 @@ x-backend: &backend
   volumes:
     - .:/app:cached
     - rails_cache:/app/tmp_cache
-    - bundle:/bundle
+    - bundle:/usr/local/bundle
     - node_modules:/app/node_modules
     - packs:/app/public/packs
     - .docker/.psqlrc:/root/.psqlrc:ro
@@ -38,9 +38,6 @@ x-backend: &backend
     HISTFILE: /app/log/.bash_history
     PSQL_HISTFILE: /app/log/.psql_history
     EDITOR: vi
-  depends_on:
-    - postgres
-    - redis
 
 services:
   runner:
@@ -67,7 +64,7 @@ services:
       - 3035
     volumes:
       - .:/app:cached
-      - bundle:/bundle
+      - bundle:/usr/local/bundle
       - node_modules:/app/node_modules
       - packs:/app/public/packs
     environment:

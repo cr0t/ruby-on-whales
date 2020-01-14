@@ -40,28 +40,25 @@ x-backend: &backend
     EDITOR: vi
 
 services:
-  runner:
+  shell:
     <<: *backend
     command: /bin/bash
-    ports:
-      - 3000
-      - 3002
 
   rails:
     <<: *backend
-    command: bundle exec rails server -b 0.0.0.0
+    command: bash -c "which rails && bundle exec rails server -b 0.0.0.0"
     ports:
-      - 3000
+      - "3000:3000"
 
   sidekiq:
     <<: *backend
-    command: bundle exec sidekiq -C config/sidekiq.yml
+    command: bash -c "which sidekiq && bundle exec sidekiq -C config/sidekiq.yml"
 
   webpacker:
     <<: *app
-    command: ./bin/webpack-dev-server
+    command: bash -c "ls ./bin/webpack-dev-server && ./bin/webpack-dev-server"
     ports:
-      - 3035
+      - "3035:3025"
     volumes:
       - .:/app:cached
       - bundle:/usr/local/bundle
@@ -80,14 +77,14 @@ services:
     environment:
       - PSQL_HISTFILE=/root/log/.psql_history
     ports:
-      - 5432
+      - "5432:5432"
 
   redis:
     image: redis:5.0-alpine
     volumes:
       - redis:/data
     ports:
-      - 6379
+      - "6379:6379"
 
 volumes:
   postgres:

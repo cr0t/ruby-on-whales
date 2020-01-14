@@ -21,7 +21,7 @@ $ git clone git@github.com:cr0t/ruby-on-whales.git <your-app-name>
 
 $ cd <your-app-name> && rm -rf .git
 
-# now you can open docker-compose.yml, remove services you do not need, update Ruby/Node/etc. versions
+# now you can open docker-compose.yml, remove services you do not need, update Postgresql password update Ruby/Node/etc. versions
 
 $ docker-compose up
 ```
@@ -33,7 +33,7 @@ This step takes some time to download and build images. If it went well you shou
 ```bash
 $ docker-compose exec shell bash
 
-# this reveals a bash session inside our Docker containers, so we can run our favourite ruby/rails commands, for example:
+# this gives us a bash session inside our Docker containers, so we can run our favourite ruby/rails commands, for example:
 
 root@11f8d8b944bb:/app# gem install rails
 root@11f8d8b944bb:/app# rails new . --database=postgresql
@@ -72,15 +72,23 @@ production:
 root@11f8d8b944bb:/app# vim config/database.yml
 root@11f8d8b944bb:/app# cat config/database.yml
 # ...
-development:
-  <<: *default
-  database: app_development
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: postgres
-  password: postgres
+  password: sec-ruby-on-whales-ret
   host: postgres
 # ...
 root@11f8d8b944bb:/app# rake db:create
+root@11f8d8b944bb:/app# exit
+$ docker-compose stop # or down
+$ docker-compose start # or up
 ```
+
+> We need to run two last commands to re-start all services defined in `docker-compose.yml` (if we left it original).
 
 Ok! Now you can try to open http://localhost:3000/ in the browser on the host machine and check if you see Ruby on Rails welcome page.
 

@@ -56,7 +56,7 @@ services:
 
   webpacker:
     <<: *app
-    command: bash -c "ls ./bin/webpack-dev-server && ./bin/webpack-dev-server"
+    command: bash -c "test -x ./bin/webpack-dev-server && ./bin/webpack-dev-server"
     ports:
       - "3035:3025"
     volumes:
@@ -75,7 +75,8 @@ services:
       - postgres:/var/lib/postgresql/data
       - ./log:/root/log:cached
     environment:
-      - PSQL_HISTFILE=/root/log/.psql_history
+      PSQL_HISTFILE: /root/log/.psql_history
+      POSTGRES_PASSWORD: sec-ruby-on-whales-ret
     ports:
       - "5432:5432"
 

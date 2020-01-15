@@ -1,10 +1,10 @@
 ARG RUBY_VERSION
 FROM ruby:$RUBY_VERSION-slim-buster
 
-ARG PG_MAJOR
-ARG NODE_MAJOR
 ARG BUNDLER_VERSION
+ARG NODE_MAJOR
 ARG YARN_VERSION
+ARG POSTGRES_MAJOR
 
 # Common dependencies
 RUN apt-get update -qq \
@@ -21,7 +21,7 @@ RUN apt-get update -qq \
 
 # Add PostgreSQL to sources list
 RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
+  && echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' $POSTGRES_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
 # Add NodeJS to sources list
 RUN curl -sL https://deb.nodesource.com/setup_$NODE_MAJOR.x | bash -
@@ -36,7 +36,7 @@ RUN apt-get update -qq \
   && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade \
   && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
   libpq-dev \
-  postgresql-client-$PG_MAJOR \
+  postgresql-client-$POSTGRES_MAJOR \
   nodejs \
   yarn=$YARN_VERSION-1 \
   $(cat /tmp/Aptfile | xargs) \

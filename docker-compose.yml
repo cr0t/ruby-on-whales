@@ -5,14 +5,14 @@ x-app: &app
     context: .
     dockerfile: ./.docker/Dockerfile
     args:
-      RUBY_VERSION: '2.6.5'
-      PG_MAJOR: '12'
-      NODE_MAJOR: '13'
-      YARN_VERSION: '1.21.1'
-      BUNDLER_VERSION: '2.1.4'
+      RUBY_VERSION: ${RUBY_VERSION}
+      BUNDLER_VERSION: ${BUNDLER_VERSION}
+      NODE_MAJOR: ${NODE_MAJOR}
+      YARN_VERSION: ${YARN_VERSION}
+      POSTGRES_MAJOR: ${POSTGRES_MAJOR}
   environment: &env
-    NODE_ENV: development
-    RAILS_ENV: ${RAILS_ENV:-development}
+    NODE_ENV: ${NODE_ENV}
+    RAILS_ENV: ${RAILS_ENV}
   image: ruby-on-whales:1.0.0
   tmpfs:
     - /tmp
@@ -23,7 +23,7 @@ x-backend: &backend
   tty: true
   volumes:
     - .:/app:cached
-    - rails_cache:/app/tmp_cache
+    - rails_cache:/app/tmp/cache
     - bundle:/usr/local/bundle
     - node_modules:/app/node_modules
     - packs:/app/public/packs
@@ -31,7 +31,7 @@ x-backend: &backend
   environment:
     <<: *env
     REDIS_URL: redis://redis:6379/
-    DATABASE_URL: postgres://postgres:postgres@postgres:5432/
+    DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/
     BOOTSNAP_CACHE_DIR: /bundle/bootsnap
     WEBPACKER_DEV_SERVER_HOST: webpacker
     WEB_CONCURRENCY: 1
@@ -48,7 +48,7 @@ services:
     <<: *backend
     command: bash -c "which rails && bundle exec rails server -b 0.0.0.0"
     ports:
-      - "3000:3000"
+      - 3000:3000
 
   sidekiq:
     <<: *backend
@@ -58,7 +58,7 @@ services:
     <<: *app
     command: bash -c "test -x ./bin/webpack-dev-server && ./bin/webpack-dev-server"
     ports:
-      - "3035:3025"
+      - 3035:3025
     volumes:
       - .:/app:cached
       - bundle:/usr/local/bundle
@@ -69,23 +69,23 @@ services:
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
 
   postgres:
-    image: postgres:12.1
+    image: postgres:${POSTGRES_MAJOR}
     volumes:
-      - .docker/.psqlrc:/root/.psqlrc:ro
       - postgres:/var/lib/postgresql/data
+      - .docker/.psqlrc:/root/.psqlrc:ro
       - ./log:/root/log:cached
     environment:
       PSQL_HISTFILE: /root/log/.psql_history
-      POSTGRES_PASSWORD: sec-ruby-on-whales-ret
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - 5432:5432
 
   redis:
     image: redis:5.0-alpine
     volumes:
       - redis:/data
     ports:
-      - "6379:6379"
+      - 6379:6379
 
 volumes:
   postgres:

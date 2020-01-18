@@ -56,7 +56,7 @@ services:
 
   webpacker:
     <<: *app
-    command: bash -c "test -x ./bin/webpack-dev-server && ./bin/webpack-dev-server"
+    command: bash -c "test -x /app/bin/webpack-dev-server && /app/bin/webpack-dev-server"
     ports:
       - 3035:3025
     volumes:

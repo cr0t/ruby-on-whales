@@ -81,9 +81,7 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: postgres
-  password: sec-ruby-on-whales-ret
-  host: postgres
+  url: <%= ENV.fetch("DATABASE_URL") %>
 # ...
 root@11f8d8b944bb:/app# rake db:create
 root@11f8d8b944bb:/app# exit

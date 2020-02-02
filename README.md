@@ -1,6 +1,12 @@
 # Ruby on Whales
 
-It's our humble attempt to use and adjust for our needs instructions we found in a great Evil Martians article [Dockerizing Ruby and Rails development]. This repository should be used as template for new Ruby or Ruby on Rails projects (we need to install additional gems for the latter). Also, it is possible to comment out (or delete) unnecessary services that you do not need to have in simple Ruby projects (for example, `sidekiq`, or `redis`, or everything except the app container).
+> Inspired by [Dockerizing Ruby and Rails development] blog post.
+
+It's a Docker Compose template repository that should helps in bootstrapping an environment for writing new Ruby and/or Ruby on Rails applications.
+
+Also, it is possible to comment out (or delete) unnecessary services that you do not need to have in simple Ruby projects (for example, `sidekiq`, or `redis`, or everything except the app container).
+
+Below we provided a step-by-step instructions on how to bootstrap your local development environment.
 
 ## Tips&Tricks
 
@@ -22,6 +28,8 @@ $ git clone git@github.com:cr0t/ruby-on-whales.git <your-app-name>
 $ cd <your-app-name> && rm -rf .git
 
 $ mv .env.example .env
+
+$ mv README.md README-ON-WHALES.md # we need this to avoid conflicts with app's README.md
 
 # now you can open docker-compose.yml, remove services you do not need
 # and adjust versions and other settings in the .env file before you proceed

@@ -14,10 +14,24 @@ RUN apt-get update -qq \
   curl \
   less \
   git \
+  shared-mime-info \
   && apt-get clean \
   && rm -rf /var/cache/apt/archives/* \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && truncate -s 0 /var/log/*log
+
+# Download MIME types database for mimemagic (only if you use it)
+RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    shared-mime-info \
+  && cp /usr/share/mime/packages/freedesktop.org.xml ./ \
+  && apt-get remove -y --purge shared-mime-info \
+  && apt-get clean \
+  && rm -rf /var/cache/apt/archives/* \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && truncate -s 0 /var/log/*log \
+  && mkdir -p /usr/share/mime/packages \
+  && cp ./freedesktop.org.xml /usr/share/mime/packages/
 
 # Add PostgreSQL to sources list
 RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
@@ -56,7 +70,10 @@ ENV LANG=C.UTF-8 \
 # ENV PATH /app/bin:$PATH
 
 # Upgrade RubyGems and install required Bundler version
+# See https://github.com/evilmartians/terraforming-rails/pull/24 for discussion
 RUN gem update --system && \
+  rm /usr/local/lib/ruby/gems/*/specifications/default/bundler-*.gemspec && \
+  gem uninstall bundler && \
   gem install bundler:$BUNDLER_VERSION
 
 # Create a directory for the app code
